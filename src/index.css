@@ -2,8 +2,12 @@
 	margin: 1rem;
 }
 
-img {
+.profile-image {
   width: 75px;
+}
+
+.suggestion-image{
+  width: 30px;
 }
 
 .info {
@@ -33,7 +37,7 @@ form {
 .suggestion{
   cursor:pointer;
   color:white;
-  background-color: #4d4f53 !important;
+  background-color: #676868 !important;
 }
 
 .suggestion:hover{

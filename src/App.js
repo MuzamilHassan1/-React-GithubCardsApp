@@ -14,7 +14,7 @@ class Card extends React.Component {
   	const profile = this.props;
   	return (
     	<div className="github-profile">
-    	  <img src={profile.avatar_url} alt="profile"/>
+    	  <img className="profile-image" src={profile.avatar_url} alt="profile"/>
         <div className="info">
           <div className="name">{profile.name}</div>
           <div className="company">{profile.company}</div>
@@ -30,6 +30,7 @@ const Form = (props) => {
     const resp = await axios.get(`https://api.github.com/users/${userName}`);
     props.onSubmit(resp.data);
     setUserName('');;
+    setsuggestions([]);
   };
 
   const [users,setUsers] = useState([]);
@@ -81,7 +82,10 @@ const Form = (props) => {
             key={i}
             onClick={()=>onSuggestHandler(suggestion.login)}
           >
-            {suggestion.login}
+            <img className="suggestion-image" src={suggestion.avatar_url} alt="profile"/>
+            <div className="info">
+              <div>{suggestion.login}</div>
+            </div>
           </div>
         )}
       </div>
