@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import axios from 'axios';
 
 
@@ -24,28 +24,69 @@ class Card extends React.Component {
   }
 }
 
-class Form extends React.Component {
-	state = { userName: '' };
-	handleSubmit = async (event) => {
+const Form = (props) => {
+  const handleSubmit = async (event) => {
   	event.preventDefault();
-    const resp = await axios.get(`https://api.github.com/users/${this.state.userName}`);
-    this.props.onSubmit(resp.data);
-    this.setState({ userName: '' });
+    const resp = await axios.get(`https://api.github.com/users/${userName}`);
+    props.onSubmit(resp.data);
+    setUserName('');;
   };
-	render() {
-  	return (
-    	<form onSubmit={this.handleSubmit}>
-    	  <input
+
+  const [users,setUsers] = useState([]);
+  const [userName,setUserName] = useState('');
+  const [suggestions,setsuggestions] = useState([]);
+
+  useEffect(()=>{
+    const loadUsers = async () => {
+      const resp = await axios.get('https://api.github.com/users');
+      setUsers(resp.data);
+    }
+    loadUsers();
+  },[])
+
+  const onChangeHandler = (name) => {
+    let matches = [];
+    if(name.length > 0){
+        matches = users.filter(user =>{
+          const regex = new RegExp(`${name}`,"gi");
+          return user.login.match(regex);
+        })
+    }
+    console.log(matches);
+    setsuggestions(matches);
+    setUserName(name);
+  }
+
+  const onSuggestHandler = (name) => {
+    setUserName(name);
+    setsuggestions([]);
+  }
+
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <input
           type="text"
-          value={this.state.userName}
-          onChange={event => this.setState({ userName: event.target.value })}
+          onChange={e=>onChangeHandler(e.target.value)}
+          value={userName}
           placeholder="GitHub username"
           required
         />
-        <button>Add card</button>
-    	</form>
-    );
-  }
+      <button>Add card</button>
+      </form>
+      <div classNmae="list-group">
+        {suggestions && suggestions.map((suggestion,i)=>
+          <div
+            className="suggestion list-group-item bg-dark"
+            key={i}
+            onClick={()=>onSuggestHandler(suggestion.login)}
+          >
+            {suggestion.login}
+          </div>
+        )}
+      </div>
+    </>
+  );
 }
 
 class App extends React.Component {
